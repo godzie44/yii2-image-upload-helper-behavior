@@ -4,7 +4,7 @@ namespace godzie44\yii\behaviors\image\helpers\decorators;
 
 use \godzie44\yii\behaviors\image\helpers\ImageInterface;
 use yii\base\Object;
-
+use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 class RotateDecorator extends Object implements ImageInterface
 {
     /**
@@ -13,15 +13,15 @@ class RotateDecorator extends Object implements ImageInterface
     private $imageFile;
 
     /**
-     * @property int $width
-     * @property int $height
+     * @property int    $width
+     * @property int    $height
      * @property string $postfix
      */
     private $degrees;
 
     /**
      * @param ImageInterface $imageFile
-     * @param integer[] $config
+     * @param integer[]      $config
      */
     public function __construct(ImageInterface $imageFile, array $config)
     {
@@ -33,15 +33,12 @@ class RotateDecorator extends Object implements ImageInterface
     /**
      * @inheritdoc
      */
-    public function save($path)
+    public function save(NameMakerInterface $nameMaker)
     {
         $this->imageFile->getSource()->rotate($this->degrees);
 
-        $this->imageFile->save($path);
+        $this->imageFile->save($nameMaker);
     }
-
-
-
 
     /**
      * @return mixed

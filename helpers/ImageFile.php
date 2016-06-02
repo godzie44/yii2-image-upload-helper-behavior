@@ -22,9 +22,9 @@ class ImageFile implements ImageInterface{
     /**
      * @inheritdoc
      */
-    public function save($path)
+    public function save(NameMakerInterface $nameMaker)
     {
-        $fileName = $path . (new \DateTime())->getTimestamp() .  $this->postfix;
+        $fileName = $nameMaker->getFullName($this->postfix);
        // $this->image->save($fileName, $quality = 90);
         echo "file saved $fileName";
     }

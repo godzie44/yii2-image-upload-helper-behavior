@@ -1,6 +1,7 @@
 <?php
 
 namespace godzie44\yii\behaviors\image;
+
 use yii\base\Exception;
 use yii\db\ActiveRecord;
 use godzie44\yii\behaviors\image\helpers;
@@ -8,7 +9,8 @@ use yii\base\Behavior;
 use yii\helpers\VarDumper;
 use yii\web\UploadedFile;
 
-class ImageBehavior extends Behavior{
+class ImageBehavior extends Behavior
+{
 
 
     /**
@@ -21,10 +23,10 @@ class ImageBehavior extends Behavior{
     /**
      *
      * $additionalImages[$imagePostfix => $modificatorsArray] array
-     * @var $imagePostfix string postfix in name of modification image
-     * @var $modificatorsArray array array of modificators that will be applied to image
+     * @var            $imagePostfix      string postfix in name of modification image
+     * @var            $modificatorsArray array array of modificators that will be applied to image
      * $modificatorsArray[$modificatorName => $modificatorValues] sample : ['resize' => [400;600]]
-     * @property array $additionalImages (see before)
+     * @property array $additionalImages  (see before)
      */
     public $additionalImages;
     /**
@@ -50,20 +52,21 @@ class ImageBehavior extends Behavior{
     /**
      * @property $uploadImage UploadedFile
      */
-    private  $uploadImage;
+    private $uploadImage;
 
     public function events()
     {
         return [
             ActiveRecord::EVENT_BEFORE_DELETE => 'beforeDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeUpdate',
-            ActiveRecord::EVENT_AFTER_UPDATE => 'afterUpdate',
-            ActiveRecord::EVENT_AFTER_INSERT => 'afterUpdate',
+            ActiveRecord::EVENT_AFTER_UPDATE  => 'afterUpdate',
+            ActiveRecord::EVENT_AFTER_INSERT  => 'afterUpdate',
             ActiveRecord::EVENT_BEFORE_INSERT => 'beforeInsert',
         ];
     }
 
-    public function initBehavior(){
+    public function initBehavior()
+    {
         if ($this->owner->{$this->imageAttr} instanceof \yii\web\UploadedFile) {
             $this->uploadImage = $this->owner->{$this->imageAttr};
         } else {
@@ -71,27 +74,26 @@ class ImageBehavior extends Behavior{
         }
 
         $fileName = $this->uploadImage->tempName;
-        
-        $imageFactory = new helpers\ImageFactory();
+
+        $imageFactory    = new helpers\ImageFactory();
         $this->imageList = new helpers\ImageList();
 
         $this->imageList->add(
             $imageFactory->getImage($fileName, $this->postfix, [])
         );
 
-        foreach ($this->additionalImages as $imagePostfix=>$imageOptions){
+        foreach ($this->additionalImages as $imagePostfix => $imageOptions) {
             $this->imageList->add(
                 $imageFactory->getImage($fileName, $imagePostfix, $imageOptions)
             );
         }
 
 
-
     }
 
 
     /**
-     * @param $event; save image here
+     * @param $event ; save image here
      */
     public function afterUpdate($event)
     {
