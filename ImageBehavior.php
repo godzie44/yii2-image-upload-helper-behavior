@@ -3,6 +3,7 @@
 namespace godzie44\yii\behaviors\image;
 
 use yii\base\Exception;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use godzie44\yii\behaviors\image\helpers;
 use yii\base\Behavior;
@@ -50,7 +51,7 @@ class ImageBehavior extends Behavior
     private $imageList;
 
     /**
-     * @property $uploadImage UploadedFile
+     * @property \yii\web\UploadedFile $uploadImage
      */
     private $uploadImage;
 
@@ -74,6 +75,7 @@ class ImageBehavior extends Behavior
         }
 
         $fileName = $this->uploadImage->tempName;
+
 
         $imageFactory    = new helpers\ImageFactory();
         $this->imageList = new helpers\ImageList();
@@ -114,7 +116,9 @@ class ImageBehavior extends Behavior
     {
         if ($this->owner->validate()) {
             $this->initBehavior();
-            $this->imageList->save();
+            $fileExt = $this->uploadImage->getExtension();
+            $nameMaker = new helpers\TimestampNameMaker($this->saveDirectory, $fileExt);
+            $this->imageList->save($nameMaker);
             exit;
         }
 

@@ -1,31 +1,29 @@
 <?php
 namespace godzie44\yii\behaviors\image\helpers;
-use yii\helpers\ArrayHelper;
 
-class ImageList{
-     /**
+use yii\helpers\ArrayHelper;
+use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+class ImageList
+{
+    /**
      * @param $path string
-     * @param $name string
-     * @return mixed
      */
-    public function save($path)
+    public function save(NameMakerInterface $nameMaker)
     {
 
-        foreach ($this->list as $image){
-            /**
-             * @var $image  ImageInterface
-             */
-            $image->save($path);
+        /**
+         * @var $image  ImageInterface
+         */
+        foreach ($this->list as $image) {
+            $image->save($nameMaker);
         }
     }
 
-    public function add(ImageInterface $image){
+    public function add(ImageInterface $image)
+    {
         $this->list[] = $image;
     }
 
-    /**
-     * @var ImageInterface[]
-     */
-    private $list=[];
+    private $list = [];
 
 }

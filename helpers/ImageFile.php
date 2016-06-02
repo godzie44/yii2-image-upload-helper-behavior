@@ -25,8 +25,8 @@ class ImageFile implements ImageInterface{
     public function save(NameMakerInterface $nameMaker)
     {
         $fileName = $nameMaker->getFullName($this->postfix);
-       // $this->image->save($fileName, $quality = 90);
-        echo "file saved $fileName";
+        $this->image->save($fileName, $quality = 90);
+       // echo "file saved $fileName";
     }
 
     /**
