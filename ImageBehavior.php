@@ -3,6 +3,7 @@
 namespace godzie44\yii\behaviors\image;
 
 use yii\base\Exception;
+use yii\base\ExitException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use godzie44\yii\behaviors\image\helpers;
@@ -156,7 +157,7 @@ class ImageBehavior extends Behavior
             $path_parts = pathinfo($commonPath);
             return $path_parts['dirname'] .DIRECTORY_SEPARATOR. $path_parts['filename'] . $postfix . "." . $path_parts['extension'];
         } else {
-            return null;
+            throw new Exception('cant find image');
         }
     }
 
