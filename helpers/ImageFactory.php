@@ -50,7 +50,8 @@ class ImageFactory
     {
         $this->decorators = [
             'Resize' => decorators\ResizeDecorator::className(),
-            'Rotate' => decorators\RotateDecorator::className()
+            'Rotate' => decorators\RotateDecorator::className(),
+            'Default' => decorators\DefaultDecorator::className()
         ];
     }
 

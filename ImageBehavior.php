@@ -7,9 +7,14 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use godzie44\yii\behaviors\image\helpers;
 use yii\base\Behavior;
+use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use yii\web\UploadedFile;
 
+/**
+ * Class ImageBehavior
+ * @package godzie44\yii\behaviors\image
+ */
 class ImageBehavior extends Behavior
 {
 
@@ -36,22 +41,26 @@ class ImageBehavior extends Behavior
     public $postfix;
 
     /**
-     * @property $saveDirectory directory of saved file
+     * @var string $saveDirectory directory of saved file
      */
     public $saveDirectory;
 
     /**
-     * @property $imageAttr file attribute name in model
+     * @var string $imageAttr file attribute name in model
      */
     public $imageAttr;
 
     /**
-     * @property $imageList ImageList
+     * @var bool $deleteOnUpdate delete old images when update image field
+     */
+    public $deleteOnUpdate = true;
+    /**
+     * @var helpers\ImageList
      */
     private $imageList;
 
     /**
-     * @property \yii\web\UploadedFile $uploadImage
+     * @var \yii\web\UploadedFile
      */
     private $uploadImage;
 
@@ -66,33 +75,34 @@ class ImageBehavior extends Behavior
         ];
     }
 
-    public function initBehavior()
+    /**
+     * @return helpers\ImageList
+     */
+    private function initImageList()
     {
-        if ($this->owner->{$this->imageAttr} instanceof \yii\web\UploadedFile) {
-            $this->uploadImage = $this->owner->{$this->imageAttr};
-        } else {
-            throw new Exception('file object must be instance of UploadFile');
-        }
-
-        $fileName = $this->uploadImage->tempName;
-
-
-        $imageFactory    = new helpers\ImageFactory();
-        $this->imageList = new helpers\ImageList();
-
-        $this->imageList->add(
-            $imageFactory->getImage($fileName, $this->postfix, [])
-        );
+        $fileName     = $this->uploadImage->tempName;
+        $imageFactory = new helpers\ImageFactory();
+        $imageList    = new helpers\ImageList();
 
         foreach ($this->additionalImages as $imagePostfix => $imageOptions) {
-            $this->imageList->add(
+            $imageList->add(
                 $imageFactory->getImage($fileName, $imagePostfix, $imageOptions)
             );
         }
 
-
+        return $imageList;
     }
 
+    private function deletePreviousImages()
+    {
+        foreach ($this->additionalImages as $imagePostfix => $imageOptions) {
+            $path = $this->getOldImage($imagePostfix);
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+
+    }
 
     /**
      * @param $event ; save image here
@@ -112,16 +122,55 @@ class ImageBehavior extends Behavior
 //        }
     }
 
+    /**
+     * @param $event
+     * @throws Exception
+     */
     public function beforeUpdate($event)
     {
-        if ($this->owner->validate()) {
-            $this->initBehavior();
-            $fileExt = $this->uploadImage->getExtension();
-            $nameMaker = new helpers\TimestampNameMaker($this->saveDirectory, $fileExt);
-            $this->imageList->save($nameMaker);
-            exit;
-        }
+        if ($this->owner->validate() && $this->owner->{$this->imageAttr} instanceof \yii\web\UploadedFile) {
+            if ($this->deleteOnUpdate) {
+                $this->deletePreviousImages();
+            }
 
+            $this->uploadImage = $this->owner->{$this->imageAttr};
+            /** init imageList and uploadImage */
+            $this->imageList = $this->initImageList();
+
+            /** init NameMaker */
+            $fileExt = $this->uploadImage->getExtension();
+
+            $nameMaker = new helpers\TimestampNameMaker($this->saveDirectory, $fileExt);
+
+            /** save images */
+            $this->imageList->save($nameMaker);
+
+            /** change image attr value to new image name without postfix */
+            $this->owner->{$this->imageAttr} = $nameMaker->getFullName();
+        }
     }
+
+    private function getConcreteImage($postfix, $commonPath)
+    {
+        if (ArrayHelper::keyExists($postfix, $this->additionalImages)) {
+            $path_parts = pathinfo($commonPath);
+            return $path_parts['dirname'] .DIRECTORY_SEPARATOR. $path_parts['filename'] . $postfix . "." . $path_parts['extension'];
+        } else {
+            return null;
+        }
+    }
+
+    private function getOldImage($postfix)
+    {
+        //echo $this->owner->oldAttributes[$this->imageAttr];
+        // exit;
+        return $this->getConcreteImage($postfix, $this->owner->oldAttributes[$this->imageAttr]);
+    }
+
+    public function getImage($postfix)
+    {
+        return $this->getConcreteImage($postfix, $this->owner->{$this->imageAttr});
+    }
+
 
 }
