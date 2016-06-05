@@ -6,7 +6,7 @@ use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 class ImageList
 {
     /**
-     * @param $path string
+     * @param NameMakerInterface $nameMaker 
      */
     public function save(NameMakerInterface $nameMaker)
     {

@@ -19,27 +19,16 @@ use yii\web\UploadedFile;
 class ImageBehavior extends Behavior
 {
 
-
-    /**
-     * $options['resize'] array
-     * $options['resize'][~resize_postfix~] = [~width~, ~height~]  param resize-postfix is postfix of resized image name
-     * @property array $options (see before)
-     */
-    public $options;
-
     /**
      *
-     * $additionalImages[$imagePostfix => $modificatorsArray] array
+     * $images[$imagePostfix => $modificatorsArray] array
      * @var            $imagePostfix      string postfix in name of modification image
      * @var            $modificatorsArray array array of modificators that will be applied to image
      * $modificatorsArray[$modificatorName => $modificatorValues] sample : ['resize' => [400;600]]
-     * @property array $additionalImages  (see before)
+     * @property array $images  (see before)
      */
-    public $additionalImages;
-    /**
-     * @property $postfix postfix of saved image file
-     */
-    public $postfix;
+    public $images;
+
 
     /**
      * @var string $saveDirectory directory of saved file
@@ -68,11 +57,7 @@ class ImageBehavior extends Behavior
     public function events()
     {
         return [
-            ActiveRecord::EVENT_BEFORE_DELETE => 'beforeDelete',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeUpdate',
-            ActiveRecord::EVENT_AFTER_UPDATE  => 'afterUpdate',
-            ActiveRecord::EVENT_AFTER_INSERT  => 'afterUpdate',
-            ActiveRecord::EVENT_BEFORE_INSERT => 'beforeInsert',
         ];
     }
 
@@ -85,7 +70,7 @@ class ImageBehavior extends Behavior
         $imageFactory = new helpers\ImageFactory();
         $imageList    = new helpers\ImageList();
 
-        foreach ($this->additionalImages as $imagePostfix => $imageOptions) {
+        foreach ($this->images as $imagePostfix => $imageOptions) {
             $imageList->add(
                 $imageFactory->getImage($fileName, $imagePostfix, $imageOptions)
             );
@@ -94,9 +79,12 @@ class ImageBehavior extends Behavior
         return $imageList;
     }
 
+    /**
+     *
+     */
     private function deletePreviousImages()
     {
-        foreach ($this->additionalImages as $imagePostfix => $imageOptions) {
+        foreach ($this->images as $imagePostfix => $imageOptions) {
             $path = $this->getOldImage($imagePostfix);
             if (file_exists($path)) {
                 unlink($path);
@@ -105,23 +93,6 @@ class ImageBehavior extends Behavior
 
     }
 
-    /**
-     * @param $event ; save image here
-     */
-    public function afterUpdate($event)
-    {
-
-    }
-
-
-    public function beforeInsert($event)
-    {
-//
-//        if ($event->sender->{$this->imgAttr} instanceof \yii\web\UploadedFile) {
-//            $event->sender->{$this->imgAttr}->name = $this->createFileName($event->sender->{$this->imgAttr});
-//
-//        }
-    }
 
     /**
      * @param $event
@@ -141,7 +112,7 @@ class ImageBehavior extends Behavior
             /** init NameMaker */
             $fileExt = $this->uploadImage->getExtension();
 
-            $nameMaker = new helpers\TimestampNameMaker($this->saveDirectory, $fileExt);
+            $nameMaker = new helpers\name_makers\TimestampNameMaker($this->saveDirectory, $fileExt);
 
             /** save images */
             $this->imageList->save($nameMaker);
@@ -151,23 +122,37 @@ class ImageBehavior extends Behavior
         }
     }
 
+    /**
+     * @param $postfix
+     * @param $commonPath
+     * @return string
+     * @throws Exception
+     */
     private function getConcreteImage($postfix, $commonPath)
     {
-        if (ArrayHelper::keyExists($postfix, $this->additionalImages)) {
+        if (ArrayHelper::keyExists($postfix, $this->images)) {
             $path_parts = pathinfo($commonPath);
-            return $path_parts['dirname'] .DIRECTORY_SEPARATOR. $path_parts['filename'] . $postfix . "." . $path_parts['extension'];
+            return $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . $postfix . "." . $path_parts['extension'];
         } else {
             throw new Exception('cant find image');
         }
     }
 
+    /**
+     * @param $postfix
+     * @return string
+     * @throws Exception
+     */
     private function getOldImage($postfix)
     {
-        //echo $this->owner->oldAttributes[$this->imageAttr];
-        // exit;
         return $this->getConcreteImage($postfix, $this->owner->oldAttributes[$this->imageAttr]);
     }
 
+    /**
+     * @param $postfix
+     * @return string
+     * @throws Exception
+     */
     public function getImage($postfix)
     {
         return $this->getConcreteImage($postfix, $this->owner->{$this->imageAttr});

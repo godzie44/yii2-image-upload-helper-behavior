@@ -7,10 +7,10 @@ use yii\base\Object;
 use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 
 /**
- * Class ResizeDecorator
+ * Class SharpenDecorator
  * @package godzie44\yii\behaviors\image\helpers\decorators
  */
-class ResizeDecorator extends Object implements ImageInterface
+class CropDecorator extends Object implements ImageInterface
 {
     /**
      * @var ImageInterface
@@ -20,17 +20,27 @@ class ResizeDecorator extends Object implements ImageInterface
     /**
      * @var int $width
      * @var int $height
+     * @var int $offset_x
+     * @var int $offset_y
      */
     private $width;
     private $height;
+    private $offset_x;
+    private $offset_y;
 
-
+    /**
+     * @param ImageInterface $imageFile
+     * @param integer[]      $config
+     */
     public function __construct(ImageInterface $imageFile, array $config)
     {
         $this->imageFile = $imageFile;
-        
+
         $this->width = $config[0];
         $this->height = $config[1];
+        $this->offset_x = $config[2];
+        $this->offset_y = $config[3];
+
     }
 
     /**
@@ -38,16 +48,13 @@ class ResizeDecorator extends Object implements ImageInterface
      */
     public function save(NameMakerInterface $nameMaker)
     {
-        $this->imageFile->getSource()->resize($this->width, $this->height, \yii\image\drivers\Image::HEIGHT);
+        $this->imageFile->getSource()->crop($this->width, $this->height, $this->offset_x, $this->offset_y);
 
         $this->imageFile->save($nameMaker);
     }
 
-
-
-
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getSource()
     {

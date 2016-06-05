@@ -1,13 +1,17 @@
 <?php
 namespace godzie44\yii\behaviors\image\helpers;
-use yii\web\UploadedFile;
+
 use yii\image\ImageDriver;
 use Yii;
 
+/**
+ * Class ImageFile
+ * @package godzie44\yii\behaviors\image\helpers
+ */
 class ImageFile implements ImageInterface{
     /**
-     * @property mixed $image
-     * @property string $postfix
+     * @var mixed $image
+     * @var string $postfix
      */
     private $image;
     private $postfix;
@@ -26,11 +30,10 @@ class ImageFile implements ImageInterface{
     {
         $fileName = $nameMaker->getFullName($this->postfix);
         $this->image->save($fileName, $quality = 90);
-       // echo "file saved $fileName";
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getSource(){
         return $this->image;

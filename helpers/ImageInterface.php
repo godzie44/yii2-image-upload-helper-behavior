@@ -10,6 +10,10 @@ namespace godzie44\yii\behaviors\image\helpers;
 
 use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 
+/**
+ * Interface ImageInterface
+ * @package godzie44\yii\behaviors\image\helpers
+ */
 interface ImageInterface
 {
 

@@ -7,10 +7,10 @@ use yii\base\Object;
 use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 
 /**
- * Class ResizeDecorator
+ * Class SharpenDecorator
  * @package godzie44\yii\behaviors\image\helpers\decorators
  */
-class ResizeDecorator extends Object implements ImageInterface
+class FlipDecorator extends Object implements ImageInterface
 {
     /**
      * @var ImageInterface
@@ -18,19 +18,19 @@ class ResizeDecorator extends Object implements ImageInterface
     private $imageFile;
 
     /**
-     * @var int $width
-     * @var int $height
+     * @var int
      */
-    private $width;
-    private $height;
+    private $direction;
 
-
+    /**
+     * @param ImageInterface $imageFile
+     * @param integer[]      $config
+     */
     public function __construct(ImageInterface $imageFile, array $config)
     {
         $this->imageFile = $imageFile;
-        
-        $this->width = $config[0];
-        $this->height = $config[1];
+
+        $this->direction = $config[0];
     }
 
     /**
@@ -38,16 +38,13 @@ class ResizeDecorator extends Object implements ImageInterface
      */
     public function save(NameMakerInterface $nameMaker)
     {
-        $this->imageFile->getSource()->resize($this->width, $this->height, \yii\image\drivers\Image::HEIGHT);
+        $this->imageFile->getSource()->flip($this->direction);
 
         $this->imageFile->save($nameMaker);
     }
 
-
-
-
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getSource()
     {

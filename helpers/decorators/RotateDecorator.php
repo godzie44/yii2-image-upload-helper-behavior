@@ -5,18 +5,18 @@ namespace godzie44\yii\behaviors\image\helpers\decorators;
 use \godzie44\yii\behaviors\image\helpers\ImageInterface;
 use yii\base\Object;
 use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+
+/**
+ * Class RotateDecorator
+ * @package godzie44\yii\behaviors\image\helpers\decorators
+ */
 class RotateDecorator extends Object implements ImageInterface
 {
     /**
-     * @property ImageInterface
+     * @var ImageInterface
      */
     private $imageFile;
-
-    /**
-     * @property int    $width
-     * @property int    $height
-     * @property string $postfix
-     */
+    
     private $degrees;
 
     /**

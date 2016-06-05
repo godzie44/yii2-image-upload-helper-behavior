@@ -14,7 +14,7 @@ class DefaultDecorator extends Object implements ImageInterface
     private $imageFile;
 
 
-    public function __construct(ImageInterface $imageFile, array $config=[])
+    public function __construct(ImageInterface $imageFile, array $config = [])
     {
         $this->imageFile = $imageFile;
     }
@@ -26,8 +26,6 @@ class DefaultDecorator extends Object implements ImageInterface
     {
         $this->imageFile->save($nameMaker);
     }
-
-
 
 
     /**

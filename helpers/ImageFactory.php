@@ -3,8 +3,9 @@ namespace godzie44\yii\behaviors\image\helpers;
 
 use godzie44\yii\behaviors\image\helpers;
 use \godzie44\yii\behaviors\image\helpers\decorators;
+use yii\base\Object;
 
-class ImageFactory
+class ImageFactory extends Object
 {
     /**
      * @param $fileName
@@ -17,24 +18,22 @@ class ImageFactory
     }
 
     /**
-     * @param string         $prefix decorator class prefix
+     * @param string $prefix decorator class prefix
      * @param ImageInterface $object
-     * @param array          $params
+     * @param array $params
      * @return ImageInterface
      * @throws \yii\base\InvalidConfigException
      */
     private function addDecorator($prefix, $object, $params)
     {
-
         $className = $this->decorators[ucfirst($prefix)];
-
         return \Yii::createObject($className, [$object, $params]);
     }
 
     /**
      * @param string $fileName full path to file
      * @param string $postfix
-     * @param array  $imageOptions
+     * @param array $imageOptions
      * @return ImageInterface
      */
     public function getImage($fileName, $postfix, array $imageOptions)
@@ -46,11 +45,17 @@ class ImageFactory
         return $image;
     }
 
-    function __construct()
+    /**
+     * @inheritdoc
+     */
+    function init()
     {
         $this->decorators = [
+            'Sharpen' => decorators\SharpenDecorator::className(),
             'Resize' => decorators\ResizeDecorator::className(),
             'Rotate' => decorators\RotateDecorator::className(),
+            'Crop' => decorators\CropDecorator::className(),
+            'Flip' => decorators\FlipDecorator::className(),
             'Default' => decorators\DefaultDecorator::className()
         ];
     }

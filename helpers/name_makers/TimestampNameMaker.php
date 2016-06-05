@@ -1,7 +1,7 @@
 <?php
-namespace godzie44\yii\behaviors\image\helpers;
+namespace godzie44\yii\behaviors\image\helpers\name_makers;
 
-use yii\base\Object;
+use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
 
 class TimestampNameMaker implements NameMakerInterface {
     private $nameBody;
