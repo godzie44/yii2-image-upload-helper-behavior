@@ -4,7 +4,7 @@ Yii 2 Image Behavior
 Installation
 ------------
 ```bash
-composer require ""
+composer require godzie44/yii2-image-behavior
 ```
 Usage
 -------------
