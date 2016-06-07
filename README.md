@@ -45,6 +45,7 @@ In model (example)
     }
 ```
 
+
 All right! Now in your image directory we have 6 files with names like "\<timestapm\>\<default/small/fliped/...\>.\<file extension\>"
 
 To get path to this image call $model->getImage('default') - where default is postfix of needed image
@@ -67,9 +68,11 @@ Parameters
 
 
 * **saveDirectory** (required, string) The directory where the images are saved.
+
 * **options** (optional, array) where:
     * **deleteOldWhenUpdate** (optional, boolean) Default True. True - delete old images when upload new file in existing field, false - don't delete.
     * **ifNullBehavior** (optional, string) Default ImageBehavior::DELETE_IF_NULL. ImageBehavior::DELETE_IF_NULL - when attribute=NULL old images will be deleted, ImageBehavior::DO_NOTHING_IF_NULL - when attribute=NULL old images dont be deleted and field don be rewrite.
+
 
 ### Modificators
 
