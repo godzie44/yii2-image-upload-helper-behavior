@@ -27,7 +27,7 @@ class BehaviorTest extends \yii\codeception\TestCase
     }
 
 
-    public function testCrateThenDeleteEntity()
+    public function testCreateThenDeleteEntity()
     {
 
         $user = $this->createUser();
