@@ -26,9 +26,9 @@ class ImageFile implements ImageInterface{
     /**
      * @inheritdoc
      */
-    public function save(NameMakerInterface $nameMaker)
+    public function save(NameManagerInterface $nameMaker)
     {
-        $fileName = $nameMaker->getFullName($this->postfix);
+        $fileName = $nameMaker->generateName($this->postfix);
         $this->image->save($fileName, $quality = 90);
     }
 

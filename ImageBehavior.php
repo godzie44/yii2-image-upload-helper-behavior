@@ -17,20 +17,20 @@ class ImageBehavior extends Behavior
 {
 
     /**
+     * array [imagePostfix => [modificator => value, modificator2 => value2, ...]]
+     *  string imagePostfix      string, postfix in name of image
+     *      string modificator   name of modificator
+     *      array  value         array of modificator values
      *
-     * $images[$imagePostfix => $modificatorsArray] array
-     * @var            $imagePostfix      string postfix in name of modification image
-     * @var            $modificatorsArray array array of modificators that will be applied to image
-     * $modificatorsArray[$modificatorName => $modificatorValues] sample : ['resize' => [400;600]]
-     * @property array $images            (see before)
+     * @var array $images (see before)
      */
     public $images;
 
     /**
      * @var array
      */
-
     public $options;
+
     /**
      * @var string $saveDirectory directory of saved file
      */
@@ -41,24 +41,31 @@ class ImageBehavior extends Behavior
      */
     public $imageAttr;
 
-
     /**
      * @var helpers\ImageList
      */
     private $imageList;
 
     /**
-     * @var \yii\web\UploadedFile
+     * @var helpers\NameManagerInterface
      */
-    private $uploadImage;
+    private $nameManager;
 
     private $defaultOptions = [
         'deleteOldWhenUpdate' => true,
-        'ifNullBehavior' => self::DELETE_IF_NULL,
+        'ifNullBehavior'      => self::DELETE_IF_NULL,
     ];
 
-    public function  init(){
-        foreach ($this->defaultOptions as $name=>$value) {
+    public function  init()
+    {
+        $this->setDefaultOptions();
+        $this->nameManager = \Yii::createObject(helpers\managers\TimestampNameManager::className(),
+                                                [$this->saveDirectory]);
+    }
+
+    private function setDefaultOptions()
+    {
+        foreach ($this->defaultOptions as $name => $value) {
             if (!isset($this->options[$name])) {
                 $this->options[$name] = $value;
             }
@@ -68,33 +75,13 @@ class ImageBehavior extends Behavior
     public function events()
     {
         return [
-            ActiveRecord::EVENT_BEFORE_DELETE => 'beforeDelete',
+            ActiveRecord::EVENT_BEFORE_DELETE => 'deleteImages',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'addImages',
             ActiveRecord::EVENT_BEFORE_INSERT => 'addImages',
         ];
     }
 
     /**
-     * @return helpers\ImageList
-     */
-    private function initImageList()
-    {
-        $fileName     = $this->uploadImage->tempName;
-        $imageFactory = new helpers\ImageFactory();
-        $imageList    = new helpers\ImageList();
-
-        foreach ($this->images as $imagePostfix => $imageOptions) {
-            $imageList->add(
-                $imageFactory->getImage($fileName, $imagePostfix, $imageOptions)
-            );
-        }
-
-        return $imageList;
-    }
-
-
-    /**
-     * @param $event
      * @throws Exception
      */
     public function addImages()
@@ -106,20 +93,20 @@ class ImageBehavior extends Behavior
                 $this->deletePreviousImages();
             }
 
-            $this->uploadImage = $this->owner->{$this->imageAttr};
+            /** @var UploadedFile */
+            $uploadImage = $this->owner->{$this->imageAttr};
+
             /** init imageList and uploadImage */
-            $this->imageList = $this->initImageList();
+            $this->imageList = $this->getImageList($uploadImage->tempName);
 
-            /** init NameMaker */
-            $fileExt = $this->uploadImage->getExtension();
-
-            $nameMaker = new helpers\name_makers\TimestampNameMaker($this->saveDirectory, $fileExt);
+            /**add file extension to name manager*/
+            $this->nameManager->setExtension($uploadImage->getExtension());
 
             /** save images */
-            $this->imageList->save($nameMaker);
+            $this->imageList->save($this->nameManager);
 
             /** change image attr value to new image name without postfix */
-            $this->owner->{$this->imageAttr} = $nameMaker->getFullName();
+            $this->owner->{$this->imageAttr} = $this->nameManager->generateName();
         }
 
         if ($this->owner->validate() && NULL === $this->owner->{$this->imageAttr}) {
@@ -129,12 +116,28 @@ class ImageBehavior extends Behavior
                 $this->owner->{$this->imageAttr} = $this->owner->oldAttributes[$this->imageAttr];
             }
         }
-
     }
 
+    /**
+     * @param string $sourceFileName
+     * @return helpers\ImageList
+     */
+    private function getImageList($sourceFileName)
+    {
+        $imageFactory = new helpers\ImageFactory();
+        $imageList    = new helpers\ImageList();
+
+        foreach ($this->images as $imagePostfix => $imageOptions) {
+            $imageList->add(
+                $imageFactory->getImage($sourceFileName, $imagePostfix, $imageOptions)
+            );
+        }
+
+        return $imageList;
+    }
 
     /**
-     *
+     * delete old images
      */
     private function deletePreviousImages()
     {
@@ -149,17 +152,15 @@ class ImageBehavior extends Behavior
             $path = $this->getOldImage($imagePostfix);
             if (file_exists($path)) {
                 unlink($path);
-
             }
         }
 
     }
 
     /**
-     * delete all images before records was deleted
-     * @param $event
+     * delete all images before record was deleted
      */
-    public function beforeDelete($event)
+    public function deleteImages()
     {
         $this->deletePreviousImages();
     }
@@ -173,10 +174,7 @@ class ImageBehavior extends Behavior
     private function getConcreteImage($postfix, $commonPath)
     {
         if (ArrayHelper::keyExists($postfix, $this->images)) {
-            $path_parts = pathinfo($commonPath);
-            $fileName   = $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . $postfix . "." . $path_parts['extension'];
-            return file_exists($fileName) ? $fileName : null;
-
+            return $this->nameManager->getFile($commonPath, $postfix);
         } else {
             throw new Exception('Image is not defined in images array');
         }

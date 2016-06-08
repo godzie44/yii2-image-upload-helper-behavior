@@ -4,7 +4,7 @@ namespace godzie44\yii\behaviors\image\helpers\decorators;
 
 use \godzie44\yii\behaviors\image\helpers\ImageInterface;
 use yii\base\Object;
-use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+use godzie44\yii\behaviors\image\helpers\NameManagerInterface;
 
 /**
  * Class SharpenDecorator
@@ -46,7 +46,7 @@ class CropDecorator extends Object implements ImageInterface
     /**
      * @inheritdoc
      */
-    public function save(NameMakerInterface $nameMaker)
+    public function save(NameManagerInterface $nameMaker)
     {
         $this->imageFile->getSource()->crop($this->width, $this->height, $this->offset_x, $this->offset_y);
 

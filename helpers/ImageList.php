@@ -2,15 +2,14 @@
 namespace godzie44\yii\behaviors\image\helpers;
 
 use yii\helpers\ArrayHelper;
-use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+
 class ImageList
 {
     /**
-     * @param NameMakerInterface $nameMaker 
+     * @param NameManagerInterface $nameMaker
      */
-    public function save(NameMakerInterface $nameMaker)
+    public function save(NameManagerInterface $nameMaker)
     {
-
         /**
          * @var $image  ImageInterface
          */

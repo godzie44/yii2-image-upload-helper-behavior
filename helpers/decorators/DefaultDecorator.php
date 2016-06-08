@@ -4,7 +4,7 @@ namespace godzie44\yii\behaviors\image\helpers\decorators;
 
 use \godzie44\yii\behaviors\image\helpers\ImageInterface;
 use yii\base\Object;
-use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+use godzie44\yii\behaviors\image\helpers\NameManagerInterface;
 
 class DefaultDecorator extends Object implements ImageInterface
 {
@@ -22,7 +22,7 @@ class DefaultDecorator extends Object implements ImageInterface
     /**
      * @inheritdoc
      */
-    public function save(NameMakerInterface $nameMaker)
+    public function save(NameManagerInterface $nameMaker)
     {
         $this->imageFile->save($nameMaker);
     }

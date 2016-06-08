@@ -8,7 +8,7 @@
 
 namespace godzie44\yii\behaviors\image\helpers;
 
-use godzie44\yii\behaviors\image\helpers\NameMakerInterface;
+use godzie44\yii\behaviors\image\helpers\NameManagerInterface;
 
 /**
  * Interface ImageInterface
@@ -18,10 +18,10 @@ interface ImageInterface
 {
 
     /**
-     * @param  NameMakerInterface $nameMaker
+     * @param  NameManagerInterface $nameMaker
      * @return mixed
      */
-    public function save(NameMakerInterface $nameMaker);
+    public function save(NameManagerInterface $nameMaker);
 
     /**
      * @return mixed
