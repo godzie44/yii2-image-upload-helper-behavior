@@ -141,10 +141,9 @@ class ImageBehavior extends Behavior
      */
     private function deletePreviousImages()
     {
-
         if (empty($this->owner->oldAttributes[$this->imageAttr])
-            || (string)$this->owner->oldAttributes[$this->imageAttr] === ''
-        ) {
+            || (string)$this->owner->oldAttributes[$this->imageAttr] === '')
+        {
             return;
         }
 
@@ -154,7 +153,6 @@ class ImageBehavior extends Behavior
                 unlink($path);
             }
         }
-
     }
 
     /**
@@ -171,7 +169,7 @@ class ImageBehavior extends Behavior
      * @return string
      * @throws Exception
      */
-    private function getConcreteImage($postfix, $commonPath)
+    private function getConcreteImage($commonPath, $postfix)
     {
         if (ArrayHelper::keyExists($postfix, $this->images)) {
             return $this->nameManager->getFile($commonPath, $postfix);
@@ -187,7 +185,7 @@ class ImageBehavior extends Behavior
      */
     private function getOldImage($postfix)
     {
-        return $this->getConcreteImage($postfix, $this->owner->oldAttributes[$this->imageAttr]);
+        return $this->getConcreteImage($this->owner->oldAttributes[$this->imageAttr], $postfix);
     }
 
     /**
@@ -197,7 +195,7 @@ class ImageBehavior extends Behavior
      */
     public function getImage($postfix)
     {
-        return $this->getConcreteImage($postfix, $this->owner->{$this->imageAttr});
+        return $this->getConcreteImage($this->owner->{$this->imageAttr}, $postfix);
     }
 
     const DELETE_IF_NULL     = 'delete';
