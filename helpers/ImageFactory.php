@@ -18,13 +18,13 @@ class ImageFactory extends Object
     }
 
     /**
-     * @param string $prefix decorator class prefix
+     * @param string         $prefix decorator class prefix
      * @param ImageInterface $object
-     * @param array $params
+     * @param array          $params
      * @return ImageInterface
      * @throws \yii\base\InvalidConfigException
      */
-    private function addDecorator($prefix,ImageInterface $object, $params)
+    private function addDecorator($prefix, ImageInterface $object, $params)
     {
         $className = $this->decorators[ucfirst($prefix)];
         return \Yii::createObject($className, [$object, $params]);
@@ -33,7 +33,7 @@ class ImageFactory extends Object
     /**
      * @param string $fileName full path to file
      * @param string $postfix
-     * @param array $imageOptions
+     * @param array  $imageOptions
      * @return ImageInterface
      */
     public function getImage($fileName, $postfix, array $imageOptions)
@@ -52,10 +52,10 @@ class ImageFactory extends Object
     {
         $this->decorators = [
             'Sharpen' => decorators\SharpenDecorator::className(),
-            'Resize' => decorators\ResizeDecorator::className(),
-            'Rotate' => decorators\RotateDecorator::className(),
-            'Crop' => decorators\CropDecorator::className(),
-            'Flip' => decorators\FlipDecorator::className(),
+            'Resize'  => decorators\ResizeDecorator::className(),
+            'Rotate'  => decorators\RotateDecorator::className(),
+            'Crop'    => decorators\CropDecorator::className(),
+            'Flip'    => decorators\FlipDecorator::className(),
             'Default' => decorators\DefaultDecorator::className()
         ];
     }

@@ -3,7 +3,7 @@ Yii 2 Image Behavior
 This behavior will help you to:
 
 *    **easy**   save uploaded image
-*    **easy**   save modified copy of the initial image
+*    **easy**   save modified copy of the initial image by apply modifiers like resize, flip and others. Also, you can apply more modifiers in an arbitrary sequence.
 *    **get**    access to uploaded images
 *    **delete** images when delete record, update images when update record
 
@@ -33,7 +33,7 @@ In model (example)
              [
                 'class' => \godzie44\yii\behaviors\image\ImageBehavior::className(),
 
-                'imageAttr' => 'avatar', //attribute in model, instace of FileUploaded
+                'imageAttr' => 'avatar', //attribute in model, instance of FileUploaded
 
                 'images' => [ // array of images that we whant to save
                    'default' => ['default' => []],
@@ -64,11 +64,11 @@ Parameters
 * **imageAttr** (required, string) Name of model attribute that contains FileUploaded object.
 * **images** (required, array[]) List of output images. Fields in this array must be format:
 
-    [string image_postfix => [string modificator => array $params, ...]]
+    [string image_postfix => [string modifiers => array $params, ...]]
 
     where:
     * **image_postfix** string, postfix of concrete image
-    * **modificator**   string, modificator that will be applied to the image. (see modificator list and their params in modificators section)
+    * **modifiers**   string, modificator that will be applied to the image. (see modificator list and their params in modificators section)
     * **params**        array, params of modificator
 
 
@@ -80,7 +80,7 @@ Parameters
     * **ifNullBehavior**      (optional, string) Default ImageBehavior::DELETE_IF_NULL. ImageBehavior::DELETE_IF_NULL - when attribute=NULL old images will be deleted, ImageBehavior::DO_NOTHING_IF_NULL - when attribute=NULL old images dont be deleted and field don be rewrite.
 
 
-### Modificators
+### Modifiers
 
 * **default**   default image, params is empty array [].
 * **resize**    resize image, params [int width,int height].
@@ -89,7 +89,7 @@ Parameters
 * **crop**      crop image, params [int width, int height,int offset_x,int offset_y].
 * **rotate**    rotate image, params [int degrees].
 
-You can use this modificators in any number and combinations.
+You can use this modifiers in any number and combinations.
 
 Simple example of usage (user profile with avatar)
 ----------
