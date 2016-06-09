@@ -2,9 +2,9 @@ Yii 2 Image Behavior
 =====================
 This behavior will help you to:
 
-*    **easy** save uploaded image
-*    **easy** save modified copy of the initial image
-*    **get** access to uploaded images
+*    **easy**   save uploaded image
+*    **easy**   save modified copy of the initial image
+*    **get**    access to uploaded images
 *    **delete** images when delete record, update images when update record
 
 Installation

@@ -24,7 +24,7 @@ class ImageFactory extends Object
      * @return ImageInterface
      * @throws \yii\base\InvalidConfigException
      */
-    private function addDecorator($prefix, $object, $params)
+    private function addDecorator($prefix,ImageInterface $object, $params)
     {
         $className = $this->decorators[ucfirst($prefix)];
         return \Yii::createObject($className, [$object, $params]);
