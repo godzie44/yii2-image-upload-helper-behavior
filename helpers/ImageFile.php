@@ -29,7 +29,7 @@ class ImageFile implements ImageInterface{
     public function save(NameManagerInterface $nameMaker)
     {
         $fileName = $nameMaker->generateName($this->postfix);
-        $this->image->save($fileName, $quality = 90);
+        $this->image->save($fileName, $quality = 100);
     }
 
     /**
